@@ -8,12 +8,31 @@ import csv
 
 service_url ='http://dawa.aws.dk/datavask/adresser?'
 
-with open('/Users/danielarnason/Documents/adresser.csv', 'r') as csv_file:
-	#Næste linie skal være tilstede, hvis der er headers i csv filen.
-	#next(csv_file)
-	for row in csv_file:
-		url = service_url + urllib.parse.urlencode({'betegnelse' : row})
-		url = url[:-3] # Fjerner det underlige newline character symbol %0A fra enden af hvert url
-		# url_data = urllib.request.urlopen(url).read()
-		# js_data = json.loads(url_data.decode('utf-8'))
-		print(url)
+#Åbner csv filen, der indeholder de adresser, der skal vaskes
+with open('/Users/danielarnason/Documents/adresser.csv', 'r') as csvFile:
+	with open('/Users/danielarnason/Documents/csv_test.csv', 'w') as csvOutput:
+		csvOutputWriter = csv.writer(csvOutput)
+		csvFileReader = csv.reader(csvFile)
+
+		#Fjerner headers fra csv filen og gemmer den i en variabel
+		headers = next(csvFileReader)
+
+		#tilføjer de nye kolonner til headers listen
+		headers.extend(['vejnavnDawa', 'postnrDawa', 'kategoriDawa'])
+
+		#skrive headers ind i den nye csv fil
+		csvOutputWriter.writerow(headers)
+
+		#Loop igennen alle adresser fra csv filen
+		for row in csvFileReader:
+			url = service_url + urllib.parse.urlencode({'betegnelse' : row[0]})
+			urlData = urllib.request.urlopen(url).read()
+			jsData = json.loads(urlData.decode('utf-8'))
+
+			#Her finder man de forskellige ting i JSON objektet fra API'et og gemmer dem i variabler
+			kategori = jsData['kategori']
+			vejnavn = jsData['resultater'][0]['adresse']['vejnavn']
+			postnr = jsData['resultater'][0]['adresse']['postnr']
+
+			#Skriv hver række og værdierne fra det tilsvarende JSON objekt
+			csvOutputWriter.writerow([row[0], vejnavn, postnr, kategori])
