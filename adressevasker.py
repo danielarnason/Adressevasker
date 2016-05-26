@@ -7,10 +7,12 @@ import json
 import csv
 
 service_url ='http://dawa.aws.dk/datavask/adresser?'
+inputFilePath = 'C:/Users/jjo4da/Desktop/Python/adresser.csv'
+outputFilePath = 'C:/Users/jjo4da/Desktop/Python/csv_test.csv'
 
 #Åbner csv filen, der indeholder de adresser, der skal vaskes
-with open('/Users/danielarnason/Documents/adresser.csv', 'r') as csvFile:
-	with open('/Users/danielarnason/Documents/csv_test.csv', 'w') as csvOutput:
+with open(inputFilePath, 'r') as csvFile:
+	with open(outputFilePath, 'w') as csvOutput:
 		csvOutputWriter = csv.writer(csvOutput)
 		csvFileReader = csv.reader(csvFile)
 
