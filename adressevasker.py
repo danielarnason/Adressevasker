@@ -27,7 +27,7 @@ with open(inputFilePath, 'r') as csvFile:
 
 		#Loop igennen alle adresser fra csv filen
 		for row in csvFileReader:
-			url = service_url + urllib.parse.urlencode({'betegnelse' : row[2] + ' ' + row[3] + ' ' + row[4]})
+			url = service_url + urllib.parse.urlencode({'betegnelse' : row[2] + row[3] + row[4]})
 			urlData = urllib.request.urlopen(url).read()
 			jsData = json.loads(urlData.decode('utf-8'))
 
@@ -38,5 +38,15 @@ with open(inputFilePath, 'r') as csvFile:
 			postnr = jsData['resultater'][0]['adresse']['postnr']
 			postnrnavn = jsData['resultater'][0]['adresse']['postnrnavn']
 
+			#Her finder den koordinaterne for den fundne adresse
+			hrefUrl = jsData['resultater'][0]['aktueladresse']['href']
+			hrefUrlData = urllib.request.urlopen(hrefUrl).read()
+			hrefJsonData = json.loads(hrefUrlData.decode('utf-8'))
+
+			latitude = hrefJsonData['adgangsadresse']['adgangspunkt']['koordinater'][0]
+			longitude = hrefJsonData['adgangsadresse']['adgangspunkt']['koordinater'][1]
+
+			print(latitude, longitude)
+
 			#Skriv hver række og værdierne fra det tilsvarende JSON objekt
-			csvOutputWriter.writerow([row[0], row[1], row[2], row[3], row[4], row[5], vejnavn, husnr, postnr, postnrnavn, kategori])
+			#csvOutputWriter.writerow([row[0], row[1], row[2], row[3], row[4], row[5], vejnavn, husnr, postnr, postnrnavn, kategori])
