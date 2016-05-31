@@ -29,7 +29,7 @@ with open(inputFilePath, 'r') as csvFile:
 
 		#Loop igennen alle adresser fra csv filen
 		for row in csvFileReader:
-			url = service_url + urllib.parse.urlencode({'betegnelse' : row[2] + row[3] + row[4]})
+			url = service_url + urllib.parse.urlencode({'betegnelse' : row[2] + ' ' + row[3] + ' ' + row[4]})
 			urlData = urllib.request.urlopen(url).read()
 			jsData = json.loads(urlData.decode('utf-8'))
 
@@ -44,7 +44,7 @@ with open(inputFilePath, 'r') as csvFile:
 			if status == 2 or status == 4:
 				csvOutputWriter.writerow([row[0], row[1], row[2], row[3], row[4], row[5], vejnavn, husnr, postnr, postnrnavn, kategori])
 			else:
-				hrefUrl = jsData['resultater'][0]['aktueladresse']['href']
+				hrefUrl = jsData['resultater'][0]['aktueladresse']['href'] + '?srid=25832'
 				hrefUrlData = urllib.request.urlopen(hrefUrl).read()
 				hrefJsonData = json.loads(hrefUrlData.decode('utf-8'))
 
