@@ -7,8 +7,8 @@ import json
 import csv
 
 service_url ='http://dawa.aws.dk/datavask/adresser?'
-inputFilePath = 'C:/Users/jjo4da/Desktop/Python/adresser3.csv'
-outputFilePath = 'C:/Users/jjo4da/Desktop/Python/csv_test.csv'
+inputFilePath = 'C:/Users/jjo4da/Desktop/Python/adresser.csv' #Indtast stien til din egen csv fil
+outputFilePath = 'C:/Users/jjo4da/Desktop/Python/csv_test2.csv' #Indtast sti til din output csv fil. Hvis den ikke eksistere, bliver der lavet en ny.
 
 print('Gået i gang!')
 
@@ -16,7 +16,7 @@ print('Gået i gang!')
 with open(inputFilePath, 'r') as csvFile:
 	with open(outputFilePath, 'w') as csvOutput:
 		csvOutputWriter = csv.writer(csvOutput, lineterminator='\n')
-		csvFileReader = csv.reader(csvFile, delimiter=';')
+		csvFileReader = csv.reader(csvFile, delimiter=';') #Her skal man være opmærksom på, hvilken delimiter filen bruger. De mest almindelige er et komma eller en semikolon
 
 		#Fjerner headers fra csv filen og gemmer den i en variabel
 		headers = next(csvFileReader)
@@ -29,7 +29,7 @@ with open(inputFilePath, 'r') as csvFile:
 
 		#Loop igennen alle adresser fra csv filen
 		for row in csvFileReader:
-			url = service_url + urllib.parse.urlencode({'betegnelse' : row[2] + ' ' + row[3] + ' ' + row[4]})
+			url = service_url + urllib.parse.urlencode({'betegnelse' : row[2]}) #Her skal adressekolonnen specificeres. Hvis vejnavn, husnr og postnr står i flere kolonner, så skal de tilføjes
 			urlData = urllib.request.urlopen(url).read()
 			jsData = json.loads(urlData.decode('utf-8'))
 
@@ -40,9 +40,14 @@ with open(inputFilePath, 'r') as csvFile:
 			postnr = jsData['resultater'][0]['adresse']['postnr']
 			postnrnavn = jsData['resultater'][0]['adresse']['postnrnavn']
 			status = jsData['resultater'][0]['aktueladresse']['status']
+
+			#De nye værider fra DAWA bliver tilføjet hver række fra csv filen
+			newcol = [vejnavn,husnr, postnr, postnrnavn, kategori]
+			row.extend(newcol)
+
 			#Her finder den koordinaterne for den fundne adresse
 			if status == 2 or status == 4:
-				csvOutputWriter.writerow([row[0], row[1], row[2], row[3], row[4], row[5], vejnavn, husnr, postnr, postnrnavn, kategori])
+				csvOutputWriter.writerow(row)
 			else:
 				hrefUrl = jsData['resultater'][0]['aktueladresse']['href'] + '?srid=25832'
 				hrefUrlData = urllib.request.urlopen(hrefUrl).read()
@@ -52,5 +57,5 @@ with open(inputFilePath, 'r') as csvFile:
 				longitude = hrefJsonData['adgangsadresse']['adgangspunkt']['koordinater'][1]
 
 				#Skriv hver række og værdierne fra det tilsvarende JSON objekt
-				csvOutputWriter.writerow([row[0], row[1], row[2], row[3], row[4], row[5], vejnavn, husnr, postnr, postnrnavn, kategori, latitude, longitude])
+				csvOutputWriter.writerow(row)
 print('Done!')
