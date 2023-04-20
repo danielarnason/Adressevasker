@@ -10,3 +10,6 @@ Vasker adresser fra en csv fil. Scriptet itererer igennem en csv fil, tilføjer 
 
 Scriptet henter en rigtigt stavet adresse og UTM koordinater. Den henter også informationer omkring, hvor nøjagtigt den rigtig stavede adresse er.
 Se mere i dokumentationen til Datavask API'et. http://dawa.aws.dk/adressedok#datavask
+
+# Note
+Brug i stedet min c# version
