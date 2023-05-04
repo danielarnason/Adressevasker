@@ -14,7 +14,7 @@ print('Gået i gang!')
 
 #Åbner csv filen, der indeholder de adresser, der skal vaskes
 with open(inputFilePath, 'r') as csvFile:
-	with open(outputFilePath, 'w') as csvOutput:
+	with open(outputFilePath, 'w', encoding='utf-8') as csvOutput:
 		csvOutputWriter = csv.writer(csvOutput, lineterminator='\n')
 		csvFileReader = csv.reader(csvFile, delimiter=';') #Her skal man være opmærksom på, hvilken delimiter filen bruger. De mest almindelige er et komma eller en semikolon
 
